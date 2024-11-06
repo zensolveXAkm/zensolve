@@ -36,7 +36,7 @@ const Footer = () => {
           </div>
           <div className="flex items-center mb-2">
             <FaEnvelope className="mr-2" />
-            <p>Email: <a href="mailto:info@zensolveinfotech.com" className="hover:text-gray-300">info@zensolveinfotech.com</a></p>
+            <p>Email: <a href="mailto:info@zensolveinfotech.com" className="hover:text-gray-300">support@infozensolve.in</a></p>
           </div>
           <div className="flex items-center">
             <FaPhone className="mr-2" />
