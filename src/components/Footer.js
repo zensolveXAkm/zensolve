@@ -40,7 +40,7 @@ const Footer = () => {
           </div>
           <div className="flex items-center">
             <FaPhone className="mr-2" />
-            <p>Call us: <a href="tel:7061612534" className="hover:text-gray-300">7061612534</a></p>
+            <p>Call us: <a href="tel:02269622941" className="hover:text-gray-300">7061612534</a></p>
           </div>
         </div>
 
