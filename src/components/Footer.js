@@ -32,7 +32,7 @@ const Footer = () => {
         <div className="mt-6 flex flex-col items-center">
           <div className="flex items-center mb-2">
             <FaMapMarkerAlt className="mr-2" />
-            <p>Bhagalpur Road, Godda, Jharkhand, 814133</p>
+            <p>2nd floor Bhagalpur Road Godda Near Railway Station, Jharkhand</p>
           </div>
           <div className="flex items-center mb-2">
             <FaEnvelope className="mr-2" />
