@@ -31,12 +31,12 @@ const TopCompanies = () => {
     },
     logoContainer: {
       display: 'flex',
-      animation: 'scroll 10s linear infinite',
+      animation: 'scroll 30s linear infinite', // Slowed scroll speed
       whiteSpace: 'nowrap',
     },
     logo: {
-      height: '4rem',
-      margin: '0 0.75rem',
+      height: '3rem',
+      margin: '0 1rem',
     },
   };
 
@@ -48,12 +48,18 @@ const TopCompanies = () => {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
           }
+          @media (min-width: 768px) {
+            .logo {
+              height: 4rem;
+              margin: 0 1.5rem;
+            }
+          }
         `}
       </style>
       <h3 style={styles.heading}>Top Companies</h3>
       <div style={styles.logoContainer}>
         {companyLogos.concat(companyLogos).map((logo, index) => (
-          <img key={index} src={logo} alt={`Company ${index + 1}`} style={styles.logo} />
+          <img key={index} src={logo} alt={`Company ${index + 1}`} className="logo" style={styles.logo} />
         ))}
       </div>
     </div>
