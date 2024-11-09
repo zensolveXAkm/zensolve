@@ -56,7 +56,7 @@ const TopCompanies = () => {
           }
         `}
       </style>
-      <h3 style={styles.heading}>Top Companies</h3>
+      <h3 style={styles.heading}>Our Partners</h3>
       <div style={styles.logoContainer}>
         {companyLogos.concat(companyLogos).map((logo, index) => (
           <img key={index} src={logo} alt={`Company ${index + 1}`} className="logo" style={styles.logo} />
