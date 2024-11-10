@@ -47,28 +47,15 @@ const Navbar = () => {
             <>
               <li className="hover:text-gray-300">Welcome, {user.email}</li>
               <li className="hover:text-gray-300 cursor-pointer" onClick={handleLogout}>Logout</li>
+              <li className="hover:text-gray-300"><Link to="/saved-jobs">Saved Jobs</Link></li>
+
             </>
           ) : (
             <>
               <li className="hover:text-gray-300"><Link to="/">Home</Link></li>
               <li className="hover:text-gray-300"><Link to="/jobs">Jobs</Link></li>
-              
-              {/* Dropdown for Services */}
-              <li 
-                className="relative hover:text-gray-300 cursor-pointer" 
-                onMouseEnter={() => setDropdownOpen(true)} 
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
-                Services
-                {dropdownOpen && (
-                  <ul className="absolute top-full left-0 bg-blue-500 p-2 space-y-1 text-white">
-                    <li className="hover:bg-blue-400 p-2"><Link to="/service1">Service 1</Link></li>
-                    <li className="hover:bg-blue-400 p-2"><Link to="/service2">Service 2</Link></li>
-                    <li className="hover:bg-blue-400 p-2"><Link to="/service3">Service 3</Link></li>
-                    <li className="hover:bg-blue-400 p-2"><Link to="/service4">Service 4</Link></li>
-                  </ul>
-                )}
-              </li>
+          
+              <li className="hover:text-gray-300"><Link to="/contact">Contact Us</Link></li>
 
               <li className="hover:text-gray-300"><Link to="/contact">Contact Us</Link></li>
               <li className="hover:text-gray-300"><Link to="/login">Login</Link></li>

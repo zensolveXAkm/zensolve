@@ -4,64 +4,69 @@ import { collection, getDocs } from 'firebase/firestore';
 
 const TopCompanies = () => {
   const [companyLogos, setCompanyLogos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLogos = async () => {
-      const logosCollection = collection(db, 'companyLogos'); // Ensure this collection exists
-      const logosSnapshot = await getDocs(logosCollection);
-      const logosData = logosSnapshot.docs.map(doc => doc.data().logoUrl);
-      setCompanyLogos(logosData);
+      try {
+        const logosCollection = collection(db, 'companyLogos'); // Ensure this collection exists
+        const logosSnapshot = await getDocs(logosCollection);
+        const logosData = logosSnapshot.docs.map(doc => doc.data().logoUrl);
+        setCompanyLogos(logosData);
+      } catch (err) {
+        setError('Failed to load company logos');
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchLogos();
   }, []);
 
-  // Internal CSS for scrolling animation
-  const styles = {
-    container: {
-      backgroundColor: '#f7fafc',
-      overflow: 'hidden',
-      position: 'relative',
-      padding: '1.5rem',
-    },
-    heading: {
-      fontSize: '1.25rem',
-      fontWeight: '600',
-      marginBottom: '1rem',
-      textAlign: 'center',
-    },
-    logoContainer: {
-      display: 'flex',
-      animation: 'scroll 30s linear infinite', // Slowed scroll speed
-      whiteSpace: 'nowrap',
-    },
-    logo: {
-      height: '3rem',
-      margin: '0 1rem',
-    },
-  };
+  if (loading) {
+    return (
+      <div className="text-center py-8 text-xl text-gray-500">Loading logos...</div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8 text-xl text-red-500">{error}</div>
+    );
+  }
 
   return (
-    <div style={styles.container}>
+    <div className="bg-gray-50 py-8 overflow-hidden relative">
+      <h3 className="text-xl font-semibold text-center mb-6 text-gray-800">Our Partners</h3>
+      <div className="overflow-hidden">
+        <div className="flex animate-marquee gap-6">
+          {companyLogos.concat(companyLogos).map((logo, index) => (
+            <img 
+              key={index} 
+              src={logo} 
+              alt={`Company ${index + 1}`} 
+              className="h-16 md:h-20 mx-4 transition-transform transform hover:scale-110"
+            />
+          ))}
+        </div>
+      </div>
       <style>
         {`
-          @keyframes scroll {
+          @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
           }
-          @media (min-width: 768px) {
-            .logo {
-              height: 4rem;
-              margin: 0 1.5rem;
+          .animate-marquee {
+            animation: marquee 30s linear infinite;
+          }
+          @media (max-width: 768px) {
+            .animate-marquee {
+              animation-duration: 59s;
             }
           }
         `}
       </style>
-      <h3 style={styles.heading}>Our Partners</h3>
-      <div style={styles.logoContainer}>
-        {companyLogos.concat(companyLogos).map((logo, index) => (
-          <img key={index} src={logo} alt={`Company ${index + 1}`} className="logo" style={styles.logo} />
-        ))}
-      </div>
     </div>
   );
 };

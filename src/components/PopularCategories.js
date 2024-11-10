@@ -15,13 +15,17 @@ const categories = [
 
 const PopularCategories = () => {
   return (
-    <section className="my-6 bg-gray-100 p-6 text-center">
-      <h3 className="text-xl font-semibold mb-4">Popular Categories</h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <section className="my-8 bg-white p-6 text-center rounded-lg shadow-md">
+      <h3 className="text-2xl font-semibold mb-6 text-gray-800">Popular Categories</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-8">
         {categories.map((category, index) => (
-          <Link to={category.path} key={index} className="flex flex-col items-center bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow duration-300">
-            <div className="text-4xl text-blue-500 mb-2">{category.icon}</div>
-            <h4 className="text-lg font-semibold">{category.name}</h4>
+          <Link
+            to={category.path}
+            key={index}
+            className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transform transition duration-300 ease-in-out hover:scale-105 hover:bg-gray-50"
+          >
+            <div className="text-5xl text-blue-600 mb-4">{category.icon}</div>
+            <h4 className="text-lg font-semibold text-gray-700">{category.name}</h4>
           </Link>
         ))}
       </div>

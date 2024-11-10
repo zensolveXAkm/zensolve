@@ -4,7 +4,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import PropTypes from 'prop-types';
-import { FaSpinner, FaUser, FaEnvelope, FaFileUpload, FaCheckCircle } from 'react-icons/fa'; // Importing icons
+import { FaSpinner, FaUser, FaEnvelope, FaFileUpload, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa'; // Importing icons
 
 const ALLOWED_FILE_TYPES = [
   'application/pdf',
@@ -16,7 +16,7 @@ const MAX_FILE_SIZE_MB = 5; // Limit file size to 5MB
 const uploadResumeToStorage = async (file) => {
   const storage = getStorage();
   const storageRef = ref(storage, `resumes/${file.name}`);
-
+  
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
   return url;
@@ -30,6 +30,7 @@ const ApplyJob = () => {
   const [applicantEmail, setApplicantEmail] = useState('');
   const [resume, setResume] = useState(null);
   const [error, setError] = useState(null);
+  const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false); // State for successful submission
@@ -39,6 +40,21 @@ const ApplyJob = () => {
     document.getElementById('applicantName').focus();
   }, []);
 
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setApplicantEmail(email);
+    if (!validateEmail(email)) {
+      setEmailError('Invalid email format');
+    } else {
+      setEmailError('');
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file.size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
@@ -47,6 +63,19 @@ const ApplyJob = () => {
       setResume(file);
       setError(null);
     }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    setResume(file);
+    // Add file validation logic here
   };
 
   const handleSubmit = async (e) => {
@@ -124,14 +153,15 @@ const ApplyJob = () => {
             id="applicantEmail"
             placeholder="Your Email"
             value={applicantEmail}
-            onChange={(e) => setApplicantEmail(e.target.value)}
+            onChange={handleEmailChange}
             className="border p-2 pl-10 w-full focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
             required
             aria-label="Applicant Email"
           />
+          {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
         </div>
         
-        <div className="relative mb-4">
+        <div className="relative mb-4" onDragOver={handleDragOver} onDrop={handleDrop}>
           <FaFileUpload className="absolute left-3 top-2 text-gray-500" />
           <input
             type="file"
@@ -142,6 +172,7 @@ const ApplyJob = () => {
             required
             aria-label="Resume Upload"
           />
+          {resume && <p className="mt-2 text-sm text-gray-600">{resume.name}</p>}
         </div>
         
         {error && <p className="text-red-500">{error}</p>}

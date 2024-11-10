@@ -21,6 +21,8 @@ import ApplyJob from './components/ApplyJob';
 // import SSUpload from './components/SSUpload';
 // import LogoUpload from './components/LogoUpload';
 import ThankYou from './components/ThankYou';
+import SaveJob from './components/SaveJob';
+import ContactUs from './Pages/ContactUs';
 
 const App = () => {
   return (
@@ -29,6 +31,7 @@ const App = () => {
       <Routes>
         {/* Home Route */}
         <Route path="/" element={<Home />} />
+        <Route path="/contactus" element={<ContactUs />} />
 
         {/* Category Routes */}
         <Route path="/categories/it-software" element={<ITSoftware />} />
@@ -42,14 +45,11 @@ const App = () => {
 
         {/* Job Details Route with Dynamic ID */}
         <Route path="/job-details/" element={<JobDetails />} />
-        
+        <Route path="/saved-jobs" element={<SaveJob/>} />
         {/* Login and Register Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path='apply-job' element={<ApplyJob />} />
-        {/* <Route path="/admin" element={<AdminPanel />} /> */}
-        {/* <Route path='/ss' element={ <SSUpload/> } /> */}
-        {/* <Route path='logo' element={<LogoUpload/>} /> */}
         <Route path='/thank-you' element={ <ThankYou/> } />
 
 
