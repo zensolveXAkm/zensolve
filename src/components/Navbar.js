@@ -54,6 +54,12 @@ const Navbar = () => {
             <>
               <li className="hover:text-gray-300"><Link to="/">Home</Link></li>
               <li className="hover:text-gray-300"><Link to="/jobs">Jobs</Link></li>
+            <li className="hover:text-gray-300">
+    <a href="https://zen-member.netlify.app/" target="_blank" rel="noopener noreferrer">
+        Join Membership
+    </a>
+</li>
+
               <li className="hover:text-gray-300"><Link to="/contactus">Contact Us</Link></li>
               <li className="hover:text-gray-300"><Link to="/login">Login</Link></li>
               <li className="hover:text-gray-300"><Link to="/register">Register</Link></li>
