@@ -55,7 +55,7 @@ const Navbar = () => {
               <li className="hover:text-gray-300"><Link to="/">Home</Link></li>
               <li className="hover:text-gray-300"><Link to="/jobs">Jobs</Link></li>
             <li className="hover:text-gray-300">
-    <a href="https://zen-member.netlify.app/" target="_blank" rel="noopener noreferrer">
+    <a href="https://membership2-0.vercel.app/" target="_blank" rel="noopener noreferrer">
         Join Membership
     </a>
 </li>
