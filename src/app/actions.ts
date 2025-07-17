@@ -1,8 +1,11 @@
+
 "use server";
 
 import { z } from "zod";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { auth } from "@/lib/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, limit, setDoc, doc } from "firebase/firestore";
 import { revalidatePath } from "next/cache";
 
 
@@ -171,7 +174,6 @@ export async function applyForJob(data: z.infer<typeof applicationSchema>) {
   try {
     const applicationData = validatedFields.data;
     
-    // Create a new document in the 'applications' collection
     await addDoc(collection(db, "applications"), {
       ...applicationData,
       submittedAt: serverTimestamp(),
@@ -187,6 +189,184 @@ export async function applyForJob(data: z.infer<typeof applicationSchema>) {
     return {
       success: false,
       message: "Failed to submit application. Please try again.",
+    };
+  }
+}
+
+const attendanceSchema = z.object({
+  status: z.enum(["working", "leave"]),
+  tasks: z.string().optional(),
+});
+
+export async function markAttendance(data: z.infer<typeof attendanceSchema>) {
+  const validatedFields = attendanceSchema.safeParse(data);
+  if (!validatedFields.success) {
+    return { success: false, message: "Invalid data." };
+  }
+  try {
+    await addDoc(collection(db, "attendance"), {
+      ...validatedFields.data,
+      date: serverTimestamp(),
+      // TODO: Add employee ID
+    });
+    return { success: true, message: "Attendance marked successfully." };
+  } catch (error) {
+    return { success: false, message: "Failed to mark attendance." };
+  }
+}
+
+
+const dsrSchema = z.object({
+  description: z.string().min(10, "Description is required."),
+  hasTravelled: z.boolean().default(false),
+  openingKm: z.coerce.number().optional(),
+  closingKm: z.coerce.number().optional(),
+});
+
+export async function submitDsr(data: z.infer<typeof dsrSchema>) {
+  const validatedFields = dsrSchema.safeParse(data);
+   if (!validatedFields.success) {
+    return { success: false, message: "Invalid data.", errors: validatedFields.error.flatten().fieldErrors, };
+  }
+  try {
+    await addDoc(collection(db, "dsr"), {
+      ...validatedFields.data,
+      date: serverTimestamp(),
+       // TODO: Add employee ID
+    });
+    return { success: true, message: "DSR submitted successfully." };
+  } catch (error) {
+    return { success: false, message: "Failed to submit DSR." };
+  }
+}
+
+const callLogSchema = z.object({
+  clientName: z.string().min(2, "Client name is required."),
+  clientMobile: z.string().min(10, "A valid mobile number is required."),
+  topic: z.string().min(5, "Topic is required."),
+  duration: z.coerce.number().min(1, "Duration must be at least 1 minute."),
+});
+
+
+export async function logCall(data: z.infer<typeof callLogSchema>) {
+  const validatedFields = callLogSchema.safeParse(data);
+   if (!validatedFields.success) {
+    return { success: false, message: "Invalid data.", errors: validatedFields.error.flatten().fieldErrors, };
+  }
+  try {
+    await addDoc(collection(db, "callLogs"), {
+      ...validatedFields.data,
+      date: serverTimestamp(),
+       // TODO: Add employee ID
+    });
+    return { success: true, message: "Call logged successfully." };
+  } catch (error) {
+    return { success: false, message: "Failed to log call." };
+  }
+}
+
+const earningsSchema = z.object({
+  earnings: z.array(z.object({
+    description: z.string().min(3, "Description is required."),
+    amount: z.coerce.number().min(1, "Amount must be greater than 0."),
+  })).min(1, "Please add at least one earning."),
+});
+
+export async function submitEarnings(data: z.infer<typeof earningsSchema>) {
+  const validatedFields = earningsSchema.safeParse(data);
+   if (!validatedFields.success) {
+    console.log(validatedFields.error.flatten().fieldErrors)
+    return { success: false, message: "Invalid data.", errors: validatedFields.error.flatten().fieldErrors, };
+  }
+  try {
+    const earningPromises = validatedFields.data.earnings.map(earning => {
+       return addDoc(collection(db, "earnings"), {
+        ...earning,
+        date: serverTimestamp(),
+        // TODO: Add employee ID
+      });
+    })
+    await Promise.all(earningPromises);
+    
+    return { success: true, message: "Earnings submitted successfully." };
+  } catch (error) {
+    return { success: false, message: "Failed to submit earnings." };
+  }
+}
+
+const registrationSchema = z.object({
+  fullName: z.string().min(3, "Full name must be at least 3 characters."),
+  district: z.string().min(2, "District is required."),
+  state: z.string().min(2, "State is required."),
+  pincode: z.string().length(6, "Pincode must be 6 digits."),
+  personalEmail: z.string().email("Please enter a valid personal email."),
+});
+
+export async function registerEmployee(data: z.infer<typeof registrationSchema>) {
+  const validatedFields = registrationSchema.safeParse(data);
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      message: "Invalid registration data. Please check all fields.",
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+  
+  try {
+    const { fullName, pincode, ...otherData } = validatedFields.data;
+    const firstName = fullName.split(" ")[0].toLowerCase();
+    
+    // Generate User ID
+    const userId = `${firstName}${pincode.slice(-4)}@zensolve.in`;
+
+    // Generate Password
+    let password = "";
+    for (let i = 0; i < Math.max(firstName.length, pincode.length); i++) {
+        if (firstName[i]) password += firstName[i];
+        if (pincode[i]) password += pincode[i];
+    }
+    password = password.slice(0, 8); // Ensure password is a reasonable length
+    if (password.length < 6) {
+        password = `${password}${pincode.slice(0, 6 - password.length)}`;
+    }
+
+    // Create user in Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, userId, password);
+    const user = userCredential.user;
+
+    // Save employee data to Firestore
+    await setDoc(doc(db, "employees", user.uid), {
+      name: fullName,
+      userId: userId,
+      personalEmail: otherData.personalEmail,
+      district: otherData.district,
+      state: otherData.state,
+      pincode: pincode,
+      createdAt: serverTimestamp(),
+      status: 'active', // Default status
+    });
+
+    revalidatePath("/admin/employees");
+
+    return {
+      success: true,
+      message: "Employee registered successfully!",
+      userId: userId,
+      password: password,
+    };
+
+  } catch (error: any) {
+    console.error("Error registering employee:", error);
+    
+    let errorMessage = "Failed to register employee. Please try again.";
+    if (error.code === 'auth/email-already-in-use') {
+      errorMessage = "This User ID is already taken. Please try with a different name or pincode.";
+    }
+
+    return {
+      success: false,
+      message: errorMessage,
     };
   }
 }
