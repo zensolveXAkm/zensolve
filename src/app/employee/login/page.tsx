@@ -44,6 +44,17 @@ export default function EmployeeLoginPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+
+    if (!values.email.endsWith('@zensolve.in')) {
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid email or password.",
+        });
+        setIsLoading(false);
+        return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       
@@ -56,10 +67,15 @@ export default function EmployeeLoginPage() {
 
     } catch (error: any) {
       console.error("Login error:", error);
+      let errorMessage = "Please check your credentials and try again.";
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        errorMessage = "Invalid email or password.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: error.message || "Please check your credentials and try again.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -84,7 +100,7 @@ export default function EmployeeLoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>User ID</FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="employee@zensolve.in" {...field} />
                     </FormControl>

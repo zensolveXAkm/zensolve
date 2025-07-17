@@ -370,3 +370,40 @@ export async function registerEmployee(data: z.infer<typeof registrationSchema>)
     };
   }
 }
+
+const newsletterSchema = z.object({
+  email: z.string().email("Please enter a valid email address."),
+});
+
+export async function subscribeToNewsletter(prevState: any, formData: FormData) {
+  const validatedFields = newsletterSchema.safeParse({
+    email: formData.get('email'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      message: "Invalid email address.",
+    };
+  }
+
+  try {
+    await addDoc(collection(db, "newsletterSubscribers"), {
+      email: validatedFields.data.email,
+      subscribedAt: serverTimestamp(),
+    });
+
+    revalidatePath("/admin/newsletter");
+    
+    return {
+      success: true,
+      message: "Thank you for subscribing!",
+    };
+  } catch (error) {
+    console.error("Error subscribing to newsletter:", error);
+    return {
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    };
+  }
+}

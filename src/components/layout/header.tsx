@@ -3,16 +3,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, Globe } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { Separator } from '../ui/separator';
+import Image from 'next/image';
 
 const NAV_LINKS = [
-  { href: '#services', label: 'Services' },
-  { href: '#contact', label: 'Contact Us' },
-  { href: '#about', label: 'About Us' },
+  { href: '/#services', label: 'Services' },
+  { href: '/jobs', label: 'Find Jobs' },
+  { href: '/#about', label: 'About Us' },
 ];
 
 interface HeaderProps {
@@ -24,7 +26,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
   const router = useRouter();
 
   const headerClasses = cn(
-    "absolute top-0 z-50 w-full",
+    "fixed top-0 z-50 w-full transition-colors duration-300",
     {
       'bg-transparent text-white': variant === 'transparent',
       'bg-background/95 border-b border-border/40 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground': variant === 'default',
@@ -32,7 +34,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
   );
   
   const linkClasses = cn(
-    "transition-colors",
+    "transition-colors font-medium",
     {
       'text-white/80 hover:text-white': variant === 'transparent',
       'text-foreground/60 hover:text-foreground/80': variant === 'default',
@@ -43,10 +45,10 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
     <header className={headerClasses}>
       <div className="container flex h-20 max-w-screen-2xl items-center">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg mr-6">
-          <Globe className="h-6 w-6" />
+          <Image src="https://github.com/akm12109/zensolve-assets/blob/main/Logo%20Zensolve.jpg?raw=true" alt="Zensolve Logo" width={32} height={32} className="rounded-md" />
           <span>Zensolve</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-6 text-sm">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -58,11 +60,17 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2">
-           <Button variant="ghost" onClick={() => router.push('/signup')} className="hidden md:flex rounded-lg">Join Membership</Button>
-           <Button variant={variant === 'transparent' ? 'outline' : 'default'} onClick={() => router.push('/employee/login')} className={cn(
+           <Button variant="ghost" onClick={() => router.push('/join-membership')} className={cn("hidden md:flex rounded-lg", linkClasses)}>Join Membership</Button>
+           <Button variant="ghost" onClick={() => router.push('/employee/login')} className={cn(
+             "hidden md:flex rounded-lg", 
+             linkClasses
+           )}>Employee Login</Button>
+           <Separator orientation="vertical" className={cn("h-6 hidden md:block", {'bg-white/30': variant === 'transparent'})} />
+           <Button onClick={() => router.push('/login')} className={cn(
              "hidden md:flex rounded-lg",
              {'bg-white text-primary hover:bg-white/90 border-none': variant === 'transparent'}
-           )}>Employee Login</Button>
+           )}>Login / Sign Up</Button>
+
            <div className="md:hidden">
             <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
@@ -74,7 +82,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 <SheetContent side="right" className="w-[280px] bg-background text-foreground">
                 <div className="p-4">
                     <Link href="/" className="flex items-center gap-2 font-bold text-lg mb-8" onClick={() => setMenuOpen(false)}>
-                        <Globe className="h-6 w-6 text-primary" />
+                        <Image src="https://github.com/akm12109/zensolve-assets/blob/main/Logo%20Zensolve.jpg?raw=true" alt="Zensolve Logo" width={32} height={32} className="rounded-md" />
                         <span>Zensolve</span>
                     </Link>
                     <nav className="flex flex-col gap-4">
@@ -90,8 +98,9 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                     ))}
                     </nav>
                     <div className="mt-8 border-t pt-6 flex flex-col gap-4">
-                        <Button className="w-full" onClick={() => { router.push('/signup'); setMenuOpen(false); }}>Join Membership</Button>
+                        <Button className="w-full" onClick={() => { router.push('/login'); setMenuOpen(false); }}>Login / Sign Up</Button>
                         <Button variant="outline" className="w-full" onClick={() => { router.push('/employee/login'); setMenuOpen(false); }}>Employee Login</Button>
+                        <Button variant="secondary" className="w-full" onClick={() => { router.push('/join-membership'); setMenuOpen(false); }}>Join Membership</Button>
                     </div>
                 </div>
                 </SheetContent>
