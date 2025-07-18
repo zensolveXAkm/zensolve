@@ -2,10 +2,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarProvider, Sidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
-import { LayoutDashboard, PlusCircle, Users, Briefcase, Mail } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Users, Briefcase, Mail, LogOut } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function AdminLayout({
   children,
@@ -13,6 +17,18 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({ title: "Logged Out", description: "You have been successfully logged out." });
+      router.push("/login");
+    } catch (error) {
+      toast({ variant: "destructive", title: "Logout Failed", description: "Something went wrong." });
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -68,6 +84,12 @@ export default function AdminLayout({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+         <div className="mt-auto p-2">
+            <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+            </Button>
+        </div>
       </Sidebar>
       <SidebarInset>
         {children}

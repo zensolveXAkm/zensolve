@@ -3,7 +3,7 @@
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CheckCircle2, Briefcase, Users, FileText, Phone, Mail, Rocket, Landmark, IndianRupee, Laptop, BriefcaseBusiness, BarChart3, Tv, Award, ShoppingBag, Settings, UserRound, ArrowRightCircle, ChevronRight, GraduationCap } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Briefcase, Users, FileText, Phone, Mail, Rocket, Landmark, IndianRupee, Laptop, BriefcaseBusiness, BarChart3, Tv, Award, ShoppingBag, Settings, UserRound, ArrowRightCircle, ChevronRight, GraduationCap, HeartHandshake } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +24,11 @@ const services = [
     icon: <FileText className="w-10 h-10 text-primary" />,
     title: 'Business Solutions',
     description: 'Offering tailored application frameworks and end-to-end business solutions to meet your needs.',
+  },
+  {
+    icon: <HeartHandshake className="w-10 h-10 text-primary" />,
+    title: 'CSR Projects',
+    description: 'Engaging in corporate social responsibility projects to make a positive impact on society.',
   },
 ];
 
@@ -137,11 +142,11 @@ export default function Home() {
               </div>
                <div className="hidden md:flex flex-col items-end space-y-4 self-end">
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">+123-456-7890</span>
+                  <span className="text-lg">+91 2269622941</span>
                   <Phone className="w-6 h-6" />
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">hello@zensolve.com</span>
+                  <span className="text-lg">support@infozensolve.in</span>
                   <Mail className="w-6 h-6" />
                 </div>
               </div>
@@ -275,7 +280,7 @@ export default function Home() {
             <h2 className="text-4xl font-extrabold tracking-tight text-center mb-12">
               Our Services
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {services.map((item) => (
                 <Card key={item.title} className="bg-primary-foreground/10 border-0 overflow-hidden text-primary-foreground text-center">
                   <CardContent className="p-6 flex flex-col items-center">
